@@ -88,7 +88,7 @@ async function getValueByIdNotNull(spreadsheetId, id) {
     const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
     const arrValues = response.data.values;
     const result = arrayToObject(arrKeys, arrValues);
-    return filterNotNullObjects(result).length ? filterNotNullObjects(result) : false
+    return filterNotNullObjects(result).length ? filterNotNullObjects(result)[0] : false
   } catch {
     return false;
   }
