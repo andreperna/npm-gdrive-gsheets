@@ -1,5 +1,5 @@
 {
-  "name": "@andreperna/gdrive-gsheets",
+  "name": "npm-gdrive-gsheets",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
