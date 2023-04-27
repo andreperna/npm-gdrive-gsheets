@@ -41,9 +41,7 @@ async function getValues(spreadsheetId, range = "a:z") {
     const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
     const arrValues = response.data.values;
     arrValues.shift() // remove first line
-    return {
-      data: arrayToObject(arrKeys, arrValues)
-    }
+    return arrayToObject(arrKeys, arrValues)
   } catch {
     return false;
   }
@@ -57,9 +55,7 @@ async function getValuesNotNull(spreadsheetId, range = "a:z") {
     const arrValues = response.data.values;
     arrValues.shift() // remove first line
     const arrResult = arrayToObject(arrKeys, arrValues);
-    return {
-      data: filterNotNullObjects(arrResult)
-    }
+    return filterNotNullObjects(arrResult)
   } catch {
     return false;
   }
@@ -109,10 +105,8 @@ async function appendValues(spreadsheetId, objToAppend, range = "a:z") {
       },
     });
 
-    arrResourceValues.unshift(arrKeys);
-    const arrResult = arrayToObject(arrResourceValues);
-    const result = arrResult.length > 1 ? arrResult : arrResult[0];
-    return result;
+    const result = arrayToObject(arrKeys, arrResourceValues)[0];
+    return response.status === 200 ? result : false;
   } catch {
     return false;
   }
@@ -123,17 +117,20 @@ async function updateValues(spreadsheetId, id, objToUpdate) {
   try {
     const strId = typeof id === "string" ? id : String(id);
     const arrKeys = await getColumns(spreadsheetId);
-    const row = await getRow(spreadsheetId, id);
+    const row = await getRow(spreadsheetId, strId);
     const range = `${row}:${row}`;
 
-    const currentValues = (await gSheetFunctions.getValues(spreadsheetId, range))[0];
+    const responseValues = await gSheets.spreadsheets.values.get({ spreadsheetId, range }) ;
+    const arrCurrentValues = responseValues.data.values
 
-    Object.keys(objToUpdate).forEach((curr) => {
-      currentValues[curr] = objToUpdate[curr];
-    });
+    const objCurrentValues = arrayToObject(arrKeys, arrCurrentValues)[0]
+  
+    Object.keys(objCurrentValues).forEach((curr)=>{
+      objCurrentValues[curr] = objToUpdate [curr] || objCurrentValues [curr]
+    })
 
-    const objUpdated = currentValues;
-
+    const objUpdated = objCurrentValues
+    
     const arrResourceValues = await objectToResourceValues(arrKeys, objUpdated);
 
     const response = await gSheets.spreadsheets.values.update({
