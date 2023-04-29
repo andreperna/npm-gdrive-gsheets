@@ -5,8 +5,9 @@ import { objectToResourceValues } from "../helpers/objectToResourceValues.js";
 import { filterNotNullObjects } from "../helpers/filterNotNullObjects.js";
 
 // get columns
-async function getColumns(spreadsheetId) {
-  const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range: "1:1" });
+async function getColumns(spreadsheetId, range = "1:1") {
+  range = range.search(/[a-z, A-Z]/g) >= 0 ? range.replace(/[0-9]/g, "") : "1:1"
+  const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range});
   const arrColumns = response.data.values[0];
   return arrColumns;
 }
@@ -37,7 +38,7 @@ async function getRow(spreadsheetId, id) {
 // get values
 async function getValues(spreadsheetId, range = "a:z") {
   try {
-    const arrKeys = await getColumns(spreadsheetId);
+    const arrKeys = await getColumns(spreadsheetId, range);
     const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
     const arrValues = response.data.values;
     arrValues.shift() // remove first line
@@ -50,7 +51,7 @@ async function getValues(spreadsheetId, range = "a:z") {
 // get values not null
 async function getValuesNotNull(spreadsheetId, range = "a:z") {
   try {
-    const arrKeys = await getColumns(spreadsheetId);
+    const arrKeys = await getColumns(spreadsheetId, range);
     const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
     const arrValues = response.data.values;
     arrValues.shift() // remove first line
@@ -93,7 +94,8 @@ async function getValueByIdNotNull(spreadsheetId, id) {
 // append values
 async function appendValues(spreadsheetId, objToAppend, range = "a:z") {
   try {
-    const arrKeys = await getColumns(spreadsheetId);
+    objToAppend.id = objToAppend.id || await getNextId(spreadsheetId)
+    const arrKeys = await getColumns(spreadsheetId, range);
     const arrResourceValues = objectToResourceValues(arrKeys, objToAppend);
 
     const response = await gSheets.spreadsheets.values.append({
@@ -160,7 +162,7 @@ async function clearValues(spreadsheetId, id) {
       range,
     });
 
-    return response.status;
+    return response.status === 200 ? true : false;
   } catch {
     return false;
   }

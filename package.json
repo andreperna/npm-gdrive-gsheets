@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon .",
-    "test": "nodemon src/test.js"
+    "debug": "nodemon src/debug.js"
   },
   "keywords": [],
   "author": "",
