@@ -8,7 +8,7 @@ import { filterNotNullObjects } from "../helpers/filterNotNullObjects.js";
 // get columns
 async function getColumns(spreadsheetId, range = "1:1") {
   range = range.search(/[a-z, A-Z]/g) >= 0 ? range.replace(/[0-9]/g, "") : "1:1"
-  const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range});
+  const response = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
   const arrColumns = response.data.values[0];
   return arrColumns;
 }
@@ -93,14 +93,17 @@ async function getValueByIdNotNull(spreadsheetId, id) {
 }
 
 // append values
-async function appendValues(spreadsheetId, objToAppend, typeId = "number",range = "a:z") {
+async function appendValues(spreadsheetId, objToAppend, typeId = "number", range = "a:z") {
   try {
-    if (typeId === "number") {
-      objToAppend.id = await getNextId(spreadsheetId)
+
+    if (!objToAppend.id) {
+      const getId = {
+        number: await getNextId(spreadsheetId),
+        uuidv4: uuidv4()
+      }
+      objToAppend.id = getId[typeId]
     }
-    if (typeId === "uuidv4") {
-      objToAppend.id = uuidv4()
-    }
+
     const arrKeys = await getColumns(spreadsheetId, range);
     const arrResourceValues = objectToResourceValues(arrKeys, objToAppend);
 
@@ -128,17 +131,17 @@ async function updateValues(spreadsheetId, id, objToUpdate) {
     const row = await getRow(spreadsheetId, id);
     const range = `${row}:${row}`;
 
-    const responseValues = await gSheets.spreadsheets.values.get({ spreadsheetId, range }) ;
+    const responseValues = await gSheets.spreadsheets.values.get({ spreadsheetId, range });
     const arrCurrentValues = responseValues.data.values
 
     const objCurrentValues = arrayToObject(arrKeys, arrCurrentValues)[0]
-  
-    Object.keys(objCurrentValues).forEach((curr)=>{
-      objCurrentValues[curr] = objToUpdate [curr] || objCurrentValues [curr]
+
+    Object.keys(objCurrentValues).forEach((curr) => {
+      objCurrentValues[curr] = objToUpdate[curr] || objCurrentValues[curr]
     })
 
     const objUpdated = objCurrentValues
-    
+
     const arrResourceValues = await objectToResourceValues(arrKeys, objUpdated);
 
     const response = await gSheets.spreadsheets.values.update({
