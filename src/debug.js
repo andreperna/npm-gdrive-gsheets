@@ -23,10 +23,10 @@ const spreadsheetId = await gDriveFunctions.getSheetId("app2", "tbl_users")
 
 // result = await gSheetFunctions.clearValues(spreadsheetId, 8)
 
-// result = await gSheetFunctions.updateValues(spreadsheetId, 8, {nome:"ddddd", idade: 25})
+// result = await gSheetFunctions.updateValues(spreadsheetId, 8, {name:"ddddd", age: 25})
 
 
-result = await gSheetFunctions.appendValues(spreadsheetId, {nome:"teste", idade: 25})
+result = await gSheetFunctions.appendValues(spreadsheetId, {name:"teste", age: 25})
 
 
 

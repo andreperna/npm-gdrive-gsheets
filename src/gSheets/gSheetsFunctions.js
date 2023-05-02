@@ -1,4 +1,5 @@
 import { gSheets } from "./gSheets.js";
+import { v4 as uuidv4 } from "uuid"
 
 import { arrayToObject } from "../helpers/arrayToObject.js";
 import { objectToResourceValues } from "../helpers/objectToResourceValues.js";
@@ -92,9 +93,14 @@ async function getValueByIdNotNull(spreadsheetId, id) {
 }
 
 // append values
-async function appendValues(spreadsheetId, objToAppend, range = "a:z") {
+async function appendValues(spreadsheetId, objToAppend, typeId = "number",range = "a:z") {
   try {
-    objToAppend.id = objToAppend.id || await getNextId(spreadsheetId)
+    if (typeId === "number") {
+      objToAppend.id = await getNextId(spreadsheetId)
+    }
+    if (typeId === "uuidv4") {
+      objToAppend.id = uuidv4()
+    }
     const arrKeys = await getColumns(spreadsheetId, range);
     const arrResourceValues = objectToResourceValues(arrKeys, objToAppend);
 
@@ -117,9 +123,9 @@ async function appendValues(spreadsheetId, objToAppend, range = "a:z") {
 // update values
 async function updateValues(spreadsheetId, id, objToUpdate) {
   try {
-    const strId = typeof id === "string" ? id : String(id);
+    // const strId = typeof id === "string" ? id : String(id);
     const arrKeys = await getColumns(spreadsheetId);
-    const row = await getRow(spreadsheetId, strId);
+    const row = await getRow(spreadsheetId, id);
     const range = `${row}:${row}`;
 
     const responseValues = await gSheets.spreadsheets.values.get({ spreadsheetId, range }) ;
@@ -153,7 +159,7 @@ async function updateValues(spreadsheetId, id, objToUpdate) {
 // clear values
 async function clearValues(spreadsheetId, id) {
   try {
-    const strId = typeof id === "string" ? id : String(id);
+    // const strId = typeof id === "string" ? id : String(id);
     const row = await getRow(spreadsheetId, id);
     const range = `b${row}:${row}`;
 
