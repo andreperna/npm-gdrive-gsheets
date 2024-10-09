@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon .",
-    "debug": "nodemon src/debug.js"
+    "debug": "node --env-file=.env src/debug.js"
   },
   "keywords": [],
   "author": "",

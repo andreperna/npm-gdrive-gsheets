@@ -5,7 +5,7 @@ import { gSheetFunctions } from "./index.js";
 
 const spreadsheetId = await gDriveFunctions.getSheetId("app2", "tbl_users")
 
-// console.log(await gSheetFunctions.getValuesNotNull(spreadsheetId))
+console.log(await gSheetFunctions.getValuesNotNull(spreadsheetId))
 // console.log(await gSheetFunctions.appendValues(spreadsheetId, {id: 5, nome:"ffff", idade:25, ff:"fff"}))
 // console.log(await gSheetFunctions.updateValues(spreadsheetId, 10, {id: 5, nome:"AAAAA", idade:33}))
 
@@ -23,7 +23,7 @@ const spreadsheetId = await gDriveFunctions.getSheetId("app2", "tbl_users")
 
 // result = await gSheetFunctions.clearValues(spreadsheetId, 8)
 
-result = await gSheetFunctions.updateValues(spreadsheetId, 20, {name:"ddddd", age: 25})
+// result = await gSheetFunctions.updateValues(spreadsheetId, 20, {name:"ddddd", age: 25})
 
 
 // result = await gSheetFunctions.appendValues(spreadsheetId, { name:"teste", age: 25})
